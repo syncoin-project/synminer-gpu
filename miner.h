@@ -1175,6 +1175,7 @@ extern int gpu_threads;
 #ifdef USE_SCRYPT
 extern bool opt_scrypt;
 extern bool opt_nscrypt;
+extern uint64_t bTimestamp;
 #else
 #define opt_scrypt 0
 #define opt_nscrypt 0

@@ -2296,6 +2296,9 @@ static bool shared_strategy(void)
 /* Must be called with curses mutex lock held and curses_active */
 static void curses_print_status(void)
 {
+	uint32_t bTimestamp;
+	uint32_t nfactor = 10;
+	nfactor = syn_GetNfactor(bTimestamp) + 1;
 	struct pool *pool = current_pool();
 
 	wattron(statuswin, A_BOLD);
@@ -2304,9 +2307,9 @@ static void curses_print_status(void)
 	mvwhline(statuswin, 1, 0, '-', 80);
 	cg_mvwprintw(statuswin, 2, 0, " %s", statusline);
 	wclrtoeol(statuswin);
-	cg_mvwprintw(statuswin, 3, 0, " ST: %d  SS: %d (%03.1f%%)  NB: %d  PA: %d  PR: %d  LW: %d  GF: %d  RF: %d   ",
+	cg_mvwprintw(statuswin, 3, 0, " ST: %d  SS: %d (%03.1f%%)  NB: %d  PA: %d  PR: %d  LW: %d  GF: %d  RF: %d | N: [%d]",
 		total_staged(), total_stale, ((double)(100*total_stale)/(double)(pool->accepted)), 
-		pool->accepted, pool->rejected, new_blocks, local_work, total_go, total_ro);
+		pool->accepted, pool->rejected, new_blocks, local_work, total_go, total_ro, nfactor);
 	wclrtoeol(statuswin);
 	if (shared_strategy() && total_pools > 1) {
 		cg_mvwprintw(statuswin, 4, 0, " Connected to multiple pools with%s block change notify",

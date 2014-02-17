@@ -2694,41 +2694,34 @@ const unsigned char minNfactor = 10;
 const unsigned char maxNfactor = 30;
 const unsigned int transitionTime = 1400472001;
 
-unsigned char syn_GetNfactor(const long int nTimestamp) {
-    int l, n;
-    long int s;
-
-    l = 0;
-
+unsigned char syn_GetNfactor(uint32_t nTimestamp) {
+	//printf("TS: %d\n", nTimestamp);
+    int l = 0;
     if (nTimestamp <= transitionTime) {
-        return 9;
+        return minNfactor - 1;
     }
-
-    s = nTimestamp - transitionTime;
+    uint64_t s = nTimestamp - transitionTime;
     while ((s >> 1) > 3) {
-      l += 1;
+      l++;
       s >>= 1;
     }
-
     s &= 3;
-    n = (l * 158 + s * 28 - 2670) / 100;
-
-    if (n < 0)
-      n = 0;
-
-    if (n > 255)
-        printf( "GetNfactor(%ld) - something wrong(n == %d)\n", nTimestamp, n );
+	
+    int n = (l * 158 + s * 28 - 2670) / 100;
+    if (n < 0) {
+		n = 0;
+	} else if (n > 255) {
+		printf( "GetNfactor(%ld) - something wrong(n == %d) (s == %d)\n", nTimestamp, n, s);
+	}
 
     unsigned char N = ((unsigned char) n);
     //printf("GetNfactor: %d -> %d %d : %d / %d\n", nTimestamp - nChainStartTime, l, s, n, min(max(N, minNfactor), maxNfactor));
 
     if (N < minNfactor) {
-      return minNfactor;
+		N = minNfactor;
     } else if (N > maxNfactor) {
-      return maxNfactor;
-    }
-
+		N = maxNfactor;
+    } 	
     return N;
     //return min(max(N, minNfactor), maxNfactor);
 }
-
